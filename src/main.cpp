@@ -6,7 +6,7 @@ CentralRegistry* CentralRegistry::instance = nullptr;
 
 void printHeader(const std::string& title) {
     std::cout << "\n" << std::string(50, '=') << "\n";
-    std::cout << "  " << title << "\n";
+    std::cout << "  " << title << "\n"; 
     std::cout << std::string(50, '=') << "\n";
 }
 
