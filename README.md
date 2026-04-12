@@ -1,10 +1,6 @@
 # Aura Retail OS — FoodKiosk Implementation
 
 **Team:** 404 Error Not Found
-**Members:** Shruti Makwana, Ayush Soni, Krisha Shah, Parin Makwana
-**Course:** IT620 - Object Oriented Programming
-**Project:** Aura Retail OS | **Submission:** Subtask 2 - Prototype Implementation
-
 ---
 
 ## Project Overview
