@@ -1,182 +1,96 @@
-# Aura Retail OS — FoodKiosk Implementation
+# Aura Retail OS 🛡️
+> **Adaptive Autonomous Modular Smart-City Retail Infrastructure**
 
-**Team:** 404 Error Not Found
----
+Aura Retail OS is a modular, adaptive software platform designed for the smart city of Zephyrus. It powers autonomous retail kiosks (Aura Kiosks) across diverse environments—from hospitals and metro stations to disaster zones. 
 
-## Project Overview
-
-A modular smart retail kiosk system with dynamic pricing capabilities, implemented as a C++ backend server with a browser-based frontend. The system demonstrates three core design patterns — Singleton, Strategy, and Command — connected to a live web UI via a REST API.
+This project was developed for the **IT620: Object-Oriented Programming** course, specifically focusing on **Path A: Adaptive Autonomous System**, emphasizing intelligent behavior, dynamic decision-making, and robust failure recovery.
 
 ---
 
-## Project Structure
+## 👥 Contributors (Team 20)
+| Name | Student ID |
+| :--- | :--- |
+| **Parin Makwana** | 202512098 |
+| **Ayush Soni** | 202512030 |
+| **Shruti Makwana** | 202512001 |
+| **Krisha Shah** | 202512064 |
 
+---
+
+## 🎯 Design Patterns & Requirement Satisfaction
+The system implements **10 Design Patterns** to satisfy the rigorous requirements of an autonomous city infrastructure.
+
+### 1. Dynamic Pricing & Operational Flexibility
+*   **Requirement**: Switch pricing strategies and operational modes at runtime.
+*   **Pattern: Strategy & State**
+    *   **Strategy**: Used for `PricingStrategy`. It allows the kiosk to swap between *Standard*, *Discount*, and *Emergency* pricing on the fly without altering product data.
+    *   **State**: Manages `KioskState` (Active, Power-Saving, Maintenance, Emergency). Each state modifies how the kiosk interacts with users (e.g., restricting sales during lockdown).
+
+### 2. Autonomous Failure Handling
+*   **Requirement**: Handle hardware or transaction failures through a sequence of recovery steps.
+*   **Pattern: Chain of Responsibility**
+    *   **Implementation**: Errors are passed through a chain: `AutoRetryHandler` ➡️ `RecalibrationHandler` ➡️ `TechnicianAlertHandler`. This ensures the system attempts self-healing before escalating to human intervention.
+
+### 3. Atomic Transactions & State Rollback
+*   **Requirement**: Transactions must be atomic. If a hardware error occurs during dispensing, the system must restore its previous state.
+*   **Pattern: Command & Memento**
+    *   **Command**: Every purchase is a `PurchaseItemCommand`, encapsulating the logic for execution and logging.
+    *   **Memento**: Before any transaction, an `InventoryMemento` is captured. If the hardware fails to dispense, the system uses the memento to roll back inventory levels, ensuring data consistency.
+
+### 4. Event-Driven Communication
+*   **Requirement**: Subsystems must communicate through events (LowStock, HWFailure) to maintain low coupling.
+*   **Pattern: Observer**
+    *   **Implementation**: A centralized `EventBus` allows subsystems to publish events. Subscribers (like the City Monitoring Center) react to these events without being directly tied to the hardware modules.
+
+### 5. Secure & Controlled Access
+*   **Requirement**: Centralized global configuration and secure inventory access.
+*   **Pattern: Singleton & Proxy**
+    *   **Singleton**: `CentralRegistry` and `CSVManager` ensure a single source of truth for configuration and data persistence.
+    *   **Proxy**: `SecureInventoryProxy` acts as a gatekeeper to the inventory, ensuring that all stock checks and updates are authorized and logged.
+
+### 6. Modular Creation & Simplified Interface
+*   **Requirement**: Create compatible components for different kiosk types and provide a simplified interface for external systems.
+*   **Pattern: Abstract Factory & Facade**
+    *   **Abstract Factory**: `KioskFactory` produces compatible modules (Dispensers, Verifiers) tailored to specific kiosk types (Pharmacy, Food, Relief).
+    *   **Facade**: `KioskInterface` provides a clean API (`purchaseItem()`, `runDiagnostics()`) for the UI, hiding the complex orchestration of commands and hardware underneath.
+
+---
+
+## 🚀 Getting Started (Run Guide)
+
+### 1. Prerequisites
+*   **OS**: Windows (Required for the `winsock2` networking library).
+*   **Compiler**: `g++` (MinGW-w64) with C++17 support.
+*   **Terminal**: PowerShell or CMD.
+
+### 2. Compilation
+Run the following command in the project root to compile the server:
+```powershell
+g++ -std=c++17 -Iinclude -I. src/main.cpp src/HttpServer.cpp src/KioskInterface.cpp src/CentralRegistry.cpp src/EventBus.cpp src/FailureHandler.cpp src/CSVManager.cpp src/InventoryProxy.cpp src/KioskState.cpp src/Command.cpp -o AuraRetailOS.exe -lws2_32
 ```
-aura-retail-os/
-├── src/
-│   ├── AuraKiosk.h      # All pattern implementations (Singleton, Strategy, Command)
-│   ├── main.cpp         # Terminal simulation driver (standalone testing)
-│   ├── server.cpp       # C++ HTTP server — exposes AuraKiosk as REST API
-│   └── index.html       # Browser frontend — calls the server via fetch
-│   ├── httplib.h       # Single-header HTTP library (download once, see setup)
-└── README.md
+*The `-lws2_32` flag links the Windows Socket libraries required for the web dashboard.*
+
+### 3. Execution
+Start the Retail OS server:
+```powershell
+.\AuraRetailOS.exe
 ```
+The server will start listening on port **8080**.
 
-> `main.cpp` is used for standalone terminal testing. For the browser frontend, `server.cpp` acts as the entry point instead.
-
----
-
-## Setup & Running
-
----
-
-### Step 1 — Compile the C++ server
-
-```bash
-# Linux / Mac
-g++ -std=c++17 -o server server.cpp -lpthread
-
-# Windows (MinGW)
-g++ -std=c++17 -o server.exe server.cpp -lws2_32 -D_WIN32_WINNT=0x0A00
-```
-
-No other installs needed — just `g++`, which everyone already has.
+### 4. Open the Dashboard
+Open your browser and go to:
+👉 **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
-### Step 2 — Run the server
+## 📂 Project Architecture
+*   `src/` & `include/`: Core C++ implementation of the Design Patterns.
+*   `data/`: CSV-based persistence layer for Inventory, Users, and Transactions.
+*   **UI Layer**: A modern, responsive dashboard built with HTML/CSS/JS that communicates with the C++ backend via a RESTful HTTP server.
 
-```bash
-# Linux / Mac
-./server
-
-# Windows
-.\server.exe
-```
-
-You should see:
-
-```
-╔══════════════════════════════════════╗
-║   Aura Kiosk Server — localhost:8080  ║
-╠══════════════════════════════════════╣
-║  GET  /inventory                      ║
-║  GET  /pricing                        ║
-║  POST /pricing   {policy}             ║
-║  POST /preview   {id, qty}            ║
-║  POST /purchase  {id, qty}            ║
-╚══════════════════════════════════════╝
-```
+## 🛠️ Troubleshooting
+*   **Port 8080 in use**: Run `taskkill /F /IM AuraRetailOS.exe` to clear any hung processes.
+*   **Data not loading**: Ensure the `data/` directory contains `inventory.csv` and `users.csv`.
 
 ---
-
-### Step 3 — Open the frontend
-
-Open `index.html` in your browser. No web server needed for the HTML file itself.
-
-The green status bar at the top confirms it is connected to the C++ server. Every button in the browser makes a real HTTP call to your running C++ process:
-
-| Browser action       | HTTP call        | C++ code called                       |
-|----------------------|------------------|---------------------------------------|
-| Page load            | GET /inventory   | `Inventory` → reads all products      |
-| Switch pricing mode  | POST /pricing    | `CentralRegistry::setPricingPolicy()` |
-| Select product / qty | POST /preview    | `PricingStrategy::calculatePrice()`   |
-| Confirm purchase     | POST /purchase   | `PurchaseCommand::execute()`          |
-
-Stock deductions are real — they happen inside your C++ `Inventory` object and persist for the lifetime of the server process.
-
----
-
-### Standalone terminal testing (optional)
-
-To test the C++ logic directly without the browser:
-
-```bash
-g++ -std=c++11 src/main.cpp -o aura_kiosk
-./aura_kiosk
-```
-
----
-
-## Implemented Design Patterns
-
-### 1. Singleton Pattern — CentralRegistry
-- **Location:** `AuraKiosk.h` (lines 10–24)
-- **Purpose:** Single source of truth for system-wide configuration. Only one instance exists throughout the application.
-- **Stores:** Pricing policy and emergency mode status
-- **Justification:** Prevents conflicting states across subsystems; easy access from anywhere in the codebase
-
-### 2. Strategy Pattern — Dynamic Pricing
-- **Location:** `AuraKiosk.h` (lines 27–56)
-- **Purpose:** Interchangeable pricing algorithms switchable at runtime without modifying purchase logic
-- **Concrete strategies:**
-  - `StandardPricing` — Regular prices (100%)
-  - `DiscountedPricing` — Weekend sale (10% off)
-  - `EmergencyPricing` — Disaster relief (50% off)
-- **Justification:** Follows the Open/Closed Principle — new strategies can be added without changing existing code
-
-### 3. Command Pattern — Purchase Operations
-- **Location:** `AuraKiosk.h` (lines 72–102)
-- **Purpose:** Encapsulates each purchase as a trackable, executable object
-- **Benefits:** Supports logging, transaction history, and future undo/redo capability
-- **Justification:** Decouples purchase request from execution logic
-
----
-
-## Simulation Scenarios
-
-The terminal simulation (`main.cpp`) demonstrates dynamic pricing through three scenarios:
-
-### Scenario 1 — Normal Operation
-- Mode: Standard Pricing
-- Action: Customer purchases 2 water bottles
-- Price: $2.00 × 2 = **$4.00**
-
-### Scenario 2 — Weekend Sale
-- Mode: Discounted Pricing (10% off)
-- Action: Customer purchases 3 sandwiches
-- Price: $5.00 × 3 × 0.9 = **$13.50**
-
-### Scenario 3 — Emergency Mode
-- Mode: Emergency Pricing (50% off)
-- Action: Disaster relief mode activated
-- Batteries: $3.00 × 5 × 0.5 = **$7.50**
-- Water: $2.00 × 3 × 0.5 = **$3.00**
-
----
-
-## Implemented Constraints
-
-- ✅ Derived Attribute: Available stock calculated from current stock
-- ✅ Atomic Operations: Purchase either completes fully or fails
-- ✅ Inventory Consistency: Stock updated only on successful purchase
-- ✅ Dynamic Behavior: Pricing changes at runtime based on system mode
-
----
-
-## Contributors & Responsibilities
-
-| Member | Responsibility |
-|---|---|
-| Shruti Makwana | CentralRegistry (Singleton), system integration |
-| Krisha Shah | Inventory management, Product class |
-| Parin Makwana | Command pattern, transaction handling |
-| Ayush Soni | Pricing strategies (Strategy pattern), simulation scenarios |
-
----
-
-## Future Enhancements
-
-- **State Pattern:** Kiosk operational modes (Active, Maintenance, Emergency)
-- **Observer Pattern:** Event system for subsystem communication
-- **Chain of Responsibility:** Failure handling chain
-- **Memento Pattern:** Transaction rollback capability
-- **Abstract Factory:** Creating different kiosk types
-- **CSV Persistence:** Save/load inventory and transactions
-- **Hardware Abstraction Layer:** Support for different dispensers
-
----
-
-**Course:** IT620 - Object Oriented Programming  
-**Project:** Aura Retail OS  
-**Submission:** Subtask 2 - Prototype Implementation
+*Developed for IT620 - Object Oriented Programming.*
