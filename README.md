@@ -10,7 +10,7 @@ This project was developed for the **IT620: Object-Oriented Programming** course
 ## 👥 Contributors (Team 17 - 404 Error Not Found)
 | Name | Student ID |
 | :--- | :--- |
-| **Parin Makwana** | 202512098 |
+| **Parin Makwana (Leader)** | 202512098 |
 | **Ayush Soni** | 202512030 |
 | **Shruti Makwana** | 202512001 |
 | **Krisha Shah** | 202512064 |
