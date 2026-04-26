@@ -7,7 +7,7 @@ This project was developed for the **IT620: Object-Oriented Programming** course
 
 ---
 
-## 👥 Contributors (Team 20)
+## 👥 Contributors (Team 17 - 404 Error Not Found)
 | Name | Student ID |
 | :--- | :--- |
 | **Parin Makwana** | 202512098 |
