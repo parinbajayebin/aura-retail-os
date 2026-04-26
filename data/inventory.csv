@@ -1,0 +1,11 @@
+product_id,name,category,price,stock,reserved,hardware_required
+101,Paracetamol,Medicine,5,3,0,none
+102,Insulin,Medicine,25,0,0,refrigeration
+103,Bandages,Medicine,3.5,99,0,none
+201,Sandwich,Food,4,50,0,refrigeration
+202,Protein Bar,Food,2.5,80,0,none
+203,Water Bottle,Food,1.5,85,0,none
+301,First Aid Kit,Emergency,15,25,0,none
+302,Flashlight,Emergency,10,40,0,none
+303,Thermal Blanket,Emergency,8,50,0,none
+304,Emergency Radio,Emergency,20,15,0,none

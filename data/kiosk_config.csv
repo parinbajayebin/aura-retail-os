@@ -1,0 +1,2 @@
+kiosk_id,kiosk_type,mode,hardware_modules
+K-001,FoodKiosk,POWER_SAVING,refrigeration|none
